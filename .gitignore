@@ -2,3 +2,5 @@ new_1000_dataset/
 new_2000_dataset/
 new_3000_dataset/
 .vscode
+*.exe
+*.out

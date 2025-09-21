@@ -1,6 +1,7 @@
-#include "utils.cpp"
+#include "greedy1.hpp"
 #include <queue>
 #include <chrono>
+#include <iostream>
 
 using namespace std;
 
@@ -82,3 +83,6 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+// g++ greedy1.cpp utils.cpp -o greedy1
+// ./greedy1 -i new_1000_dataset\erdos_n1000_p0c0.1_1.graph

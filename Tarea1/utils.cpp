@@ -1,19 +1,10 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
+#include "utils.hpp"
 
 using namespace std;
 
 
-// -+-+- Estructura del grafo -+-+-
-struct Grafo {
-    int n;
-    vector<vector<int>> vecinos;
-    vector<int> grado;
-};
-
 // --+-+- Función para parsear el archivo -+-+-
-Grafo parsearGrafo(string filename) {
+Grafo parsearGrafo(const string& filename) {
     ifstream in(filename);
     if (!in.is_open()) {
         cerr << "Error abriendo archivo: " << filename << "\n";

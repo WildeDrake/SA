@@ -5,6 +5,6 @@
 #include <vector>
 using namespace std;
 
-vector<int> greedy3(Grafo& grafo);
+vector<int> greedy22(Grafo& grafo);
 
 #endif

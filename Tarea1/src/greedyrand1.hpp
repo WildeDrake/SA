@@ -5,6 +5,6 @@
 #include <vector>
 using namespace std;
 
-vector<int> greedyRandK(Grafo& grafo);
+vector<int> greedyRandK(Grafo& grafo, int k);
 
 #endif

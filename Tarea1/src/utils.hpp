@@ -11,7 +11,6 @@ struct Grafo {
     int n;
     vector<vector<int>> vecinos;
     vector<int> grado;
-    vector<bool> eliminado;
 };
 
 Grafo parsearGrafo(const string& filename);

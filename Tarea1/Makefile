@@ -43,6 +43,10 @@ clean:
 
 
 # mingw32-make 
-# o hacer: Set-Alias make mingw32-make
-# para usar make en PowerShell
 # make
+# o directamente 
+# g++ -O2 src/test_greedy1.cpp src/greedy1.cpp src/utils.cpp -o ./test_greedy1
+# g++ -O2 src/test_greedy2.cpp src/greedy2.cpp src/utils.cpp -o ./test_greedy2
+# g++ -O2 src/test_greedy3.cpp src/greedy3.cpp src/utils.cpp -o ./test_greedy3
+# g++ -O2 src/test_greedyrand1.cpp src/greedyrand1.cpp src/utils.cpp -o ./test_greedyrand1
+# g++ -O2 src/Experimento.cpp src/greedy1.cpp src/greedy2.cpp src/greedy3.cpp src/greedyrand1.cpp src/utils.cpp -o ./Experimento

@@ -5,8 +5,8 @@
 #include <iostream>
 #include <chrono>
 #include <unordered_set>
-#include <queue>
 #include <random>
+#include <algorithm>
 
 using namespace std;
 using namespace std::chrono;
@@ -20,58 +20,124 @@ bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo)
 }
 
 // -+-+- Metaheuristica GRASP -+-+-
-vector<int> Grasp(string filename, int k, int kSwap, int tiempoMaxSeg) {
+vector<int> Grasp(string filename, int k, int kSwap, int n, int m, int tiempoMaxSeg) {
     auto start = high_resolution_clock::now();
-    // Parsing y contruccion de grafo
-    Grafo g = parsearGrafo(filename);
+    Grafo g = parsearGrafo(filename);   // Parsing y contruccion de grafo
+
 
     // Buscamos solucion incial con greedy random
     vector<int> mejorSol = greedyRandK(g, k);
+    cout << mejorSol.size() << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
+
 
     // Pasamos a busqueda local
     unordered_set<int> mejorSet(mejorSol.begin(), mejorSol.end());
     int mejorValor = mejorSol.size();
     mt19937 rng(random_device{}());
     uniform_int_distribution<> distNodo(0, g.n - 1);
+
+
     // Itera hasta que se cumpla el tiempo maximo
+    int sinMejorar = 0; // Contador de iteraciones sin mejora
     while (true) {
+
         // Verificar tiempo
         auto now = high_resolution_clock::now();
         double elapsed = duration_cast<seconds>(now - start).count();
         if (elapsed >= tiempoMaxSeg) {  // Si se ha excedido el tiempo detenemos la busqueda
             break;
         }
+
         // Crear una copia de la solucion actual
         vector<int> nuevaSol = mejorSol;
         unordered_set<int> nuevaSet = mejorSet;
-        // Remover k nodos aleatorios de la solucion actual ---
-        for (int r = 0; r < kSwap && !nuevaSol.empty(); r++) {
-            int indice = rng() % nuevaSol.size();
-            int nodoRemovido = nuevaSol[indice];
-            nuevaSet.erase(nodoRemovido);
-            nuevaSol.erase(nuevaSol.begin() + indice);
+
+        // Evaluar cantidad de conflictos que provocaría si se quitara cada nodo en la solución actual
+        vector<pair<int,int>> mejoresNodos; // (grado interno, nodo)
+        for (int nodo : nuevaSol) {
+            int gradoInterno = 0;
+            for (int v : g.vecinos[nodo])
+                if (nuevaSet.count(v)) gradoInterno++;
+            mejoresNodos.push_back({gradoInterno, nodo});
         }
-        // --- Agregar hasta k nuevos nodos válidos ---
-        int intentos = 0;
-        while (intentos < kSwap * 3) {  // algunos intentos extra
-            int candidato = distNodo(rng);
-            intentos++;
-            if (!nuevaSet.count(candidato) && validoAgregar(g, nuevaSet, candidato)) {
-                nuevaSol.push_back(candidato);
-                nuevaSet.insert(candidato);
-                if ((int)nuevaSol.size() >= mejorValor + 1) break;
+        
+        // Ordenar por mayor grado interno
+        sort(mejoresNodos.rbegin(), mejoresNodos.rend());
+
+        // Quitar los nodos con mayor grado interno
+        int remover = min(kSwap, (int)nuevaSol.size());
+        for (int i = 0; i < remover; i++) {
+            int nodo = mejoresNodos[i].second;
+            nuevaSet.erase(nodo);
+            nuevaSol.erase(remove(nuevaSol.begin(), nuevaSol.end(), nodo), nuevaSol.end());
+        }
+
+        // Generar vectores de candidatos a agregar
+        vector<pair<int,int>> candidatos; // (grado, nodo)
+        for (int nodo = 0; nodo < g.n; nodo++) {
+            if (nuevaSet.count(nodo)) continue;
+            bool conflictivo = false;
+            for (int v : g.vecinos[nodo]) {
+                if (nuevaSet.count(v)) { conflictivo = true; break; }
+            }
+            if (!conflictivo)
+                candidatos.push_back({(int)g.vecinos[nodo].size(), nodo});
+        }
+
+        // Ordenar por menor grado
+        sort(candidatos.begin(), candidatos.end());
+
+        // Agregar los mejores candidatos
+        int agregados = 0;
+        for (auto& [grado, nodo] : candidatos) {
+            if (agregados >= kSwap) break;
+            if (validoAgregar(g, nuevaSet, nodo)) {
+                nuevaSol.push_back(nodo);
+                nuevaSet.insert(nodo);
+                agregados++;
             }
         }
+
+        // Eliminar un nodo aleatorio de la solución cada cierto tiempo
+        if (rng() % n == 0 && !nuevaSol.empty()) {
+            int nodo = nuevaSol[rng() % nuevaSol.size()];
+            nuevaSet.erase(nodo);
+            nuevaSol.erase(remove(nuevaSol.begin(), nuevaSol.end(), nodo), nuevaSol.end());
+        }
+
         // Evaluar mejora
         int valor = nuevaSol.size();
         if (valor > mejorValor) {
             mejorValor = valor;
             mejorSol = nuevaSol;
             mejorSet = nuevaSet;
-            double tiempoMejora = duration_cast<seconds>(now - start).count();
-            cout << mejorValor<< " ; " << tiempoMejora << endl;
+            sinMejorar = 0;
+            double tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
+            cout << mejorValor << " ; " << tiempoMejora << endl;
+        } else {
+            sinMejorar++;
+        }
+
+        // Reiniciar con una nueva solución aleatoria si no ha habido mejoras en mucho tiempo
+        if (sinMejorar > m) {
+            // Nueva construcción aleatoria
+            vector<int> solRand = greedyRandK(g, k);
+            unordered_set<int> setRand(solRand.begin(), solRand.end());
+            // Si la nueva solución aleatoria es mejor, actualizar el mejor global
+            if ((int)solRand.size() > mejorValor) {
+                mejorSol = solRand;
+                mejorSet = setRand;
+                mejorValor = solRand.size();
+                double tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
+                cout << mejorValor << " ; " << tiempoMejora << endl;
+            }
+            // Independientemente de si es mejor o no, usarla como nueva base para seguir explorando
+            nuevaSol = solRand;
+            nuevaSet = setRand;
+            sinMejorar = 0;
         }
     }
+    
     // Fin del algoritmo
     cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
     return mejorSol;
@@ -96,19 +162,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     string filename = root + "/" + instancia;
-    int k = 1; // Parámetro para greedy aleatorizado
+    int k = 100; // Parámetro para greedy aleatorizado
+    int n = 33; // Cada n iteraciones se elimina un nodo aleatorio
+    int m = 100; // Si no hay mejora en m iteraciones se reinicia con una nueva solucion aleatoria
+    int kSwap = 20; // Número de nodos a intercambiar en búsqueda local
     int tiempoMaxSeg = 10; // Tiempo máximo en segundos
-    int kSwap = 1; // Número de nodos a intercambiar en búsqueda local
-    
-    vector<int> resultado = Grasp(filename, k, kSwap, tiempoMaxSeg);
 
-    Grafo grafo = parsearGrafo(filename);
-
-    if (!validador(grafo, resultado)) {
-        cerr << "Error: solución inválida\n";
-        return 1;
-    }
-    return 0;
+    vector<int> resultado = Grasp(filename, k, kSwap, n, m, tiempoMaxSeg);
 }
 
 // g++ GRASP.cpp utils.cpp greedyrand1.cpp -o Grasp

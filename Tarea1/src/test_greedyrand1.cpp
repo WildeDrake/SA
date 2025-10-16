@@ -35,9 +35,9 @@ int main(int argc, char* argv[]) {
     }
 
     string filename = root + "/" + instancia;
-    Grafo grafo = parsearGrafo(filename);
 
     auto start = chrono::high_resolution_clock::now();
+    Grafo grafo = parsearGrafo(filename);
     vector<int> resultado = greedyRandK(grafo, k);
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;

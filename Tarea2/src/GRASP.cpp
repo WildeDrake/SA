@@ -13,7 +13,6 @@
 using namespace std;
 using namespace std::chrono;
 
-
 // -+-+- Funcion auxiliar para verificar si un nodo puede entrar -+-+- 
 bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo, int ignorar = -1) {
     for (int v : g.vecinos[nodo]) {
@@ -25,7 +24,7 @@ bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo,
 
 
 
-// -+-+- Metaheuristica GRASP avanzada -+-+- 
+// -+-+- Metaheuristica GRASP -+-+- 
 vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
     auto start = high_resolution_clock::now();
     mt19937 rng(random_device{}());
@@ -42,7 +41,7 @@ vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
     cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
 
 
-    // -+-+- Preparar busqueda local
+    // Preparar busqueda local
     int sinMejorar = 0; 
     vector<int> baseSol = mejorSol;
     unordered_set<int> baseSet = mejorSet;
@@ -167,43 +166,3 @@ vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
     cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
     return mejorSol;
 }
-
-
-
-
-// -+-+- Función principal -+-+-
-int main(int argc, char* argv[]) {
-    string root = "../dataset_grafos_no_dirigidos";
-     if (argc < 3) {
-        cerr << "Uso: " << argv[0] << " -i <instancia-problema>\n";
-        return 1;
-    }
-    string instancia;
-    for (int i = 1; i < argc; i++) {
-        string arg = argv[i];
-        if (arg == "-i" && i + 1 < argc) {
-            instancia = argv[i + 1];
-        }
-    }
-    if (instancia.empty()) {
-        cerr << "Error: no se especificó instancia con -i\n";
-        return 1;
-    }
-    string filename = root + "/" + instancia;
-    int k = 100; // Parámetro para greedy aleatorizado
-    int n = 33; // Cada n iteraciones se elimina un nodo aleatorio
-    int m = 50; // Si no hay mejora en m iteraciones se reinicia con una nueva solucion aleatoria
-    int tiempoMaxSeg = 10; // Tiempo máximo en segundos
-
-    vector<int> resultado = Grasp(filename, k, n, m, tiempoMaxSeg);
-
-    Grafo g = parsearGrafo(filename);
-    if (validador(g, resultado)) {
-        cout << "La solucion es valida." << endl;
-    } else {
-        cout << "La solucion no es valida." << endl;
-    }
-}
-
-// g++ GRASP.cpp utils.cpp greedyrand1.cpp -o Grasp
-// ./Grasp -i ..\..\dataset_grafos_no_dirigidos\new_1000_dataset\erdos_n1000_p0c0.1_1.graph

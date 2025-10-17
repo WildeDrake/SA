@@ -25,7 +25,14 @@ bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo,
 
 
 // -+-+- Metaheuristica GRASP -+-+- 
-pair<double, vector<int>> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg, bool print){
+// filename: ruta al archivo del grafo.
+// k: parametro para greedy random (tamaño lista candidatos)
+// m: numero de iteraciones sin mejora para reinicio parcial
+// p: porcentaje de nodos a reemplazar en reinicio parcial (0-100)
+// tiempoMaxSeg: tiempo maximo de ejecucion en segundos
+// print: si es true, imprime el progreso (mejor valor y tiempo de mejora)
+pair<double, vector<int>> Grasp(string filename, int k, int m, double p, int tiempoMaxSeg, bool print){
+    p = p / 100.0; // convertir porcentaje a fraccion
     auto start = high_resolution_clock::now();
     mt19937 rng(random_device{}());
 
@@ -142,7 +149,7 @@ pair<double, vector<int>> Grasp(string filename, int k, int n, int m, int tiempo
 
         // Reinicio parcial no hay mejora en m iteraciones
         if (sinMejorar > m) {
-            int numReemplazo = max(1, (int)(baseSol.size() * 0.3)); // reemplaza 30% nodos
+            int numReemplazo = max(1, (int)(baseSol.size() * p)); // reemplaza p% nodos
             shuffle(baseSol.begin(), baseSol.end(), rng);
             for (int i = 0; i < numReemplazo && !baseSol.empty(); i++) {
                 int idx = rng() % baseSol.size();

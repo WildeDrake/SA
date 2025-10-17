@@ -13,6 +13,7 @@ int main() {
     int k = 100;           // Parametro GRASP
     int n = 33;            // Parametro GRASP
     int m = 50;            // Parametro GRASP
+    double p = 30.0;       // Parametro GRASP
     int tiempoMaxSeg = 10; // Parametro GRASP
 
     string root = "../dataset_grafos_no_dirigidos";
@@ -33,7 +34,7 @@ int main() {
                     << "_" << i << ".graph";
                 string file = oss.str();
                 // Grasp 
-                res_mh.push_back(Grasp(file, k, n, m, tiempoMaxSeg));
+                res_mh.push_back(Grasp(file, k, n, m, p, tiempoMaxSeg));
                 // Acumular resultados
                 sum_mh += res_mh.back().second.size();
                 sum_tiempo_mh += res_mh.back().first;
@@ -45,9 +46,9 @@ int main() {
                 DESres_mh += (sol.size() - PROMres_mh) * (sol.size() - PROMres_mh);
             }
             // Escribir promedios en CSV 
-            out << n << "," << fixed << setprecision(1) << dens << ","
-                << fixed << setprecision(2) << PROMres_mh << ","
-                << fixed << setprecision(2) << sqrt(DESres_mh / 30.0) << ","
+            out << n << ";" << fixed << setprecision(1) << dens << ";"
+                << fixed << setprecision(2) << PROMres_mh << ";"
+                << fixed << setprecision(2) << sqrt(DESres_mh / 30.0) << ";"
                 << fixed << setprecision(2) << PROMtiempo_mh << "\n";
 
             out.flush();

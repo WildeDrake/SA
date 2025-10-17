@@ -31,10 +31,11 @@ int main(int argc, char* argv[]) {
     int k = args.count("-k") ? stoi(args["-k"]) : 100;
     int n = args.count("-n") ? stoi(args["-n"]) : 33;
     int m = args.count("-m") ? stoi(args["-m"]) : 50;
+    double p = args.count("-p") ? stod(args["-p"]) : 30.0;
     int tiempoMaxSeg = args.count("-t") ? stoi(args["-t"]) : 10;
     int print = args.count("-p") ? stoi(args["-p"]) : 1;
     // Ejecutar GRASP 
-    pair<double, vector<int>> resultado = Grasp(filename, k, n, m, tiempoMaxSeg, print);
+    pair<double, vector<int>> resultado = Grasp(filename, k, m, p, tiempoMaxSeg, print);
     // Validar solucion 
     Grafo g = parsearGrafo(filename);
     bool esValida = validador(g, resultado.second);

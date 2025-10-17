@@ -1,4 +1,4 @@
-#include "GRASP.hpp"
+#include "ILS.hpp"
 
 #include <chrono>
 #include <fstream>
@@ -10,15 +10,15 @@ using namespace std;
 using namespace chrono;
 
 int main() {
-    int k = 100;           // Parametro GRASP
-    int n = 33;            // Parametro GRASP
-    int m = 50;            // Parametro GRASP
-    double p = 30.0;       // Parametro GRASP
-    int tiempoMaxSeg = 10; // Parametro GRASP
+    int k = 100;           // Parametro ILS
+    int n = 33;            // Parametro ILS
+    int m = 50;            // Parametro ILS
+    double p = 30.0;       // Parametro ILS
+    int tiempoMaxSeg = 10; // Parametro ILS
 
     string root = "../dataset_grafos_no_dirigidos";
     ofstream out("resultados.csv");
-    out << "TamañoGrafo;Densidad;MediaGRASP;DesviaciónEstandarGRASP;TiempoMedioGRASP\n";
+    out << "TamañoGrafo;Densidad;MediaILS;DesviaciónEstandarILS;TiempoMedioILS\n";
     for (int n : {1000, 2000, 3000}) {
         for (double dens = 0.1; dens <= 0.9; dens += 0.1) {
             double sum_mh = 0, sum_tiempo_mh = 0;
@@ -33,8 +33,8 @@ int main() {
                     << "_p0c" << fixed << setprecision(1) << dens
                     << "_" << i << ".graph";
                 string file = oss.str();
-                // Grasp 
-                res_mh.push_back(Grasp(file, k, n, m, p, tiempoMaxSeg));
+                // Ils 
+                res_mh.push_back(Ils(file, k, n, m, p, tiempoMaxSeg));
                 // Acumular resultados
                 sum_mh += res_mh.back().second.size();
                 sum_tiempo_mh += res_mh.back().first;

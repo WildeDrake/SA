@@ -14,11 +14,11 @@ using namespace chrono;
 int main() {
     string root = "../dataset_grafos_no_dirigidos";
     ofstream out("resultados.csv");
-    out << "TamañoGrafo,Densidad,"
-        << "MediaGreedy1,PromTiempoGreedy1,"
-        << "MediaGreedyRand1,PromTiempoGreedyRand1,"
-        << "MediaGreedy2,PromTiempoGreedy2,"
-        << "MediaGreedy3,PromTiempoGreedy3\n";
+    out << "TamañoGrafo;Densidad;"
+        << "MediaGreedy1;PromTiempoGreedy1;"
+        << "MediaGreedyRand1;PromTiempoGreedyRand1;"
+        << "MediaGreedy2;PromTiempoGreedy2;"
+        << "MediaGreedy3;PromTiempoGreedy3\n";
     for (int n : {1000, 2000, 3000}) {
         for (double dens = 0.1; dens <= 0.9; dens += 0.1) {
 
@@ -73,7 +73,6 @@ int main() {
                 << fixed << setprecision(2) << res_gr / 30.0 << ";" << t_gr / 30.0 << ";"
                 << fixed << setprecision(2) << res_g2 / 30.0 << ";" << t_g2 / 30.0 << ";"
                 << fixed << setprecision(2) << res_g3 / 30.0 << ";" << t_g3 / 30.0 << "\n";
-
             out.flush();
         }
     }

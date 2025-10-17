@@ -1,6 +1,6 @@
 #include "utils.hpp"
 #include "greedyrand1.hpp"
-#include "GRASP.hpp"
+#include "ILS.hpp"
 
 #include <iostream>
 #include <chrono>
@@ -24,14 +24,14 @@ bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo,
 
 
 
-// -+-+- Metaheuristica GRASP -+-+- 
+// -+-+- Metaheuristica ILS -+-+- 
 // filename: ruta al archivo del grafo.
 // k: parametro para greedy random (tamaño lista candidatos)
 // m: numero de iteraciones sin mejora para reinicio parcial
 // p: porcentaje de nodos a reemplazar en reinicio parcial (0-100)
 // tiempoMaxSeg: tiempo maximo de ejecucion en segundos
 // print: si es true, imprime el progreso (mejor valor y tiempo de mejora)
-pair<double, vector<int>> Grasp(string filename, int k, int m, double p, int tiempoMaxSeg, bool print){
+pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiempoMaxSeg, bool print){
     p = p / 100.0; // convertir porcentaje a fraccion
     auto start = high_resolution_clock::now();
     mt19937 rng(random_device{}());
@@ -171,6 +171,6 @@ pair<double, vector<int>> Grasp(string filename, int k, int m, double p, int tie
 
 
     // Fin del algoritmo
-    if (print) cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
+    if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
     return pair<double, vector<int>>(tiempoMejora, mejorSol);
 }

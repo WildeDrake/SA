@@ -8,19 +8,19 @@ SRC_DIR = ./src
 BIN_DIR = .
 
 # Lista de ejecutables
-EXECS = testGRASP Experimento
+EXECS = testILS Experimento
 
 # ------------------------
 # Regla por defecto
 # ------------------------
 all: $(EXECS)
 
-# Compilar GRASP
-testGRASP: $(SRC_DIR)/testGRASP.cpp $(SRC_DIR)/GRASP.cpp $(SRC_DIR)/greedyrand1.cpp $(SRC_DIR)/utils.cpp
+# Compilar ILS
+testILS: $(SRC_DIR)/testILS.cpp $(SRC_DIR)/ILS.cpp $(SRC_DIR)/greedyrand1.cpp $(SRC_DIR)/utils.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $(BIN_DIR)/$@
 
 # Compilar Experimento
-Experimento: $(SRC_DIR)/Experimento.cpp $(SRC_DIR)/GRASP.cpp $(SRC_DIR)/greedyrand1.cpp $(SRC_DIR)/utils.cpp
+Experimento: $(SRC_DIR)/Experimento.cpp $(SRC_DIR)/ILS.cpp $(SRC_DIR)/greedyrand1.cpp $(SRC_DIR)/utils.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $(BIN_DIR)/$@
 
 # ------------------------
@@ -33,5 +33,5 @@ clean:
 # mingw32-make 
 # make
 # o directamente 
-# g++ -O2 src/testGRASP.cpp src/GRASP.cpp src/greedyrand1.cpp src/utils.cpp -o ./test_GRASP
-# g++ -O2 src/Experimento.cpp src/GRASP.cpp src/greedyrand1.cpp src/utils.cpp -o ./Experimento
+# g++ -O2 src/testILS.cpp src/ILS.cpp src/greedyrand1.cpp src/utils.cpp -o ./test_ILS
+# g++ -O2 src/Experimento.cpp src/ILS.cpp src/greedyrand1.cpp src/utils.cpp -o ./Experimento

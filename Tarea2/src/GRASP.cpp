@@ -25,7 +25,7 @@ bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo,
 
 
 // -+-+- Metaheuristica GRASP -+-+- 
-vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
+pair<double, vector<int>> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg, bool print){
     auto start = high_resolution_clock::now();
     mt19937 rng(random_device{}());
 
@@ -38,7 +38,7 @@ vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
     vector<int> mejorSol = greedyRandK(g, k);
     unordered_set<int> mejorSet(mejorSol.begin(), mejorSol.end());
     int mejorValor = mejorSol.size();
-    cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
+    if (print) cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
 
 
     // Preparar busqueda local
@@ -53,6 +53,7 @@ vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
 
 
     // Itera hasta tiempo maximo
+    double tiempoMejora = 0;
     while (true) {
         auto now = high_resolution_clock::now();
         double elapsed = duration_cast<seconds>(now - start).count();
@@ -133,8 +134,8 @@ vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
             baseSol = nuevaSol;
             baseSet = nuevaSet;
             sinMejorar = 0;
-            double tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
-            cout << mejorValor << " ; " << tiempoMejora << endl;
+            tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
+            if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
         } else {
             sinMejorar++;
         }
@@ -163,6 +164,6 @@ vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg) {
 
 
     // Fin del algoritmo
-    cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
-    return mejorSol;
+    if (print) cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
+    return pair<double, vector<int>>(tiempoMejora, mejorSol);
 }

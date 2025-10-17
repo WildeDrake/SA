@@ -8,6 +8,6 @@
 using namespace std;
 
 // -+-+- Metaheuristica GRASP -+-+-
-vector<int> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg);
+pair<double, vector<int>> Grasp(string filename, int k, int n, int m, int tiempoMaxSeg, bool print = false);
 
 #endif

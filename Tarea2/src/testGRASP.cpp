@@ -32,13 +32,14 @@ int main(int argc, char* argv[]) {
     int n = args.count("-n") ? stoi(args["-n"]) : 33;
     int m = args.count("-m") ? stoi(args["-m"]) : 50;
     int tiempoMaxSeg = args.count("-t") ? stoi(args["-t"]) : 10;
+    int print = args.count("-p") ? stoi(args["-p"]) : 1;
     // Ejecutar GRASP 
-    vector<int> resultado = Grasp(filename, k, n, m, tiempoMaxSeg);
+    pair<double, vector<int>> resultado = Grasp(filename, k, n, m, tiempoMaxSeg, print);
     // Validar solucion 
     Grafo g = parsearGrafo(filename);
-    bool esValida = validador(g, resultado);
+    bool esValida = validador(g, resultado.second);
     if (esValida) {
-        cout << "Solucion valida de tamano " << resultado.size() << " encontrada.\n";
+        cout << "Solucion valida de tamano " << resultado.second.size() << " encontrada.\n";
     } else {
         cout << "Solucion invalida.\n";
     }
@@ -46,4 +47,4 @@ int main(int argc, char* argv[]) {
 }
 
 // g++ testGRASP.cpp utils.cpp GRASP.cpp greedyrand1.cpp -o testGrasp
-// ./testGrasp -k 80 -n 40 -m 60 -t 10 -i ..\..\dataset_grafos_no_dirigidos\new_1000_dataset\erdos_n1000_p0c0.1_1.graph
+// ./testGrasp -k 80 -n 40 -m 60 -t 10 -i ..\dataset_grafos_no_dirigidos\new_1000_dataset\erdos_n1000_p0c0.1_1.graph

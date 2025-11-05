@@ -1,0 +1,233 @@
+// brkga_misp.cpp
+#include "utils.hpp"
+#include <iostream>
+#include <chrono>
+#include <unordered_set>
+#include <random>
+#include <algorithm>
+#include <vector>
+#include <numeric>
+
+using namespace std;
+using namespace std::chrono;
+
+
+
+// -+-+- Funcion auxiliar para verificar si un nodo puede entrar -+-+- 
+bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo, int ignorar = -1) {
+    for (int v : g.vecinos[nodo]) {
+        if (v != ignorar && conjunto.count(v)) return false;
+    }
+    return true;
+}
+
+// Decodificador: convierte claves en solucion del problema 
+// Retorna lista de nodos seleccionados (vector<int> conteniendo índices de vértices)
+vector<int> decoder(const Grafo& g, const vector<double>& keys) {
+    int n = g.n;
+    if ((int)keys.size() != n) {
+        cerr << "[decoder] tamaño de keys (" << keys.size() << ") != n (" << n << ")\n";
+    }
+
+    vector<pair<double,int>> traduccion(n);
+    for (int i = 0; i < n; ++i){
+        traduccion[i] = make_pair(keys[i], i);
+    }
+
+    // ordenar descendente -> claves grandes tienen prioridad
+    sort(traduccion.begin(), traduccion.end(), [](const pair<double,int>& a, const pair<double,int>& b){
+        return a.first > b.first;
+    });
+
+    unordered_set<int> sel;
+    vector<int> solucion; // lista de nodos seleccionados
+    solucion.reserve(n);
+
+    for (auto &p : traduccion) {
+        int nodo = p.second;
+        if (validoAgregar(g, sel, nodo)) {
+            solucion.push_back(nodo);
+            sel.insert(nodo);
+        }
+    }
+    return solucion;
+}
+
+// evaluar función auxiliar (devuelve vector de (fitness, idx) de las keys ordenado y actualiza mejor global)
+vector<pair<int,int>> evaluarPoblacion(
+    const vector<vector<double>>& poblacion,
+    int& mejorValor,
+    vector<int>& mejorSol,
+    const Grafo& g
+) {
+    vector<pair<int,int>> fitness_idx(poblacion.size());
+    for (size_t i = 0; i < poblacion.size(); ++i) {
+        vector<int> sol = decoder(g, poblacion[i]);
+        int fit = static_cast<int>(sol.size());
+        fitness_idx[i] = make_pair(fit, static_cast<int>(i));
+        if (fit > mejorValor) {
+            mejorValor = fit;
+            mejorSol = move(sol);
+        }
+    }
+    // ordenar por fitness descendente
+    sort(fitness_idx.begin(), fitness_idx.end(), [](const pair<int,int>& a, const pair<int,int>& b){
+        return a.first > b.first;
+    });
+    return fitness_idx; // fitness y sus índices en pop
+};
+
+// -+-+- BRKGA para MISP -+-+-
+/* filename: grafo
+   size: tamaño de la población
+   gens: generaciones máximas
+   mr: (prob. mutación por hijo, opcional)
+   tiempoMaxSeg: timeout en segundos
+   print: bandera para imprimir info
+   pe: proporción elite 
+   pm: proporción mutants
+   rhoe: probabilidad de tomar gene del padre elite en crossover
+*/
+pair<double, vector<int>> BRKGA_MISP(
+    string filename,
+    int size,
+    int gens,
+    double mr,
+    int tiempoMaxSeg,
+    bool print,
+    double pe = 0.2, //Por default
+    double pm = 0.1,
+    double rhoe = 0.7
+) {
+    Grafo g = parsearGrafo(filename);
+    mt19937 rng(random_device{}());
+
+    // parámetros derivados
+    int eliteSize = max(1, static_cast<int>(size * pe));
+    int mutantSize = max(1, static_cast<int>(size * pm));
+    if (eliteSize + mutantSize > size) {
+        if (eliteSize >= size) eliteSize = size - 1;
+        mutantSize = max(0, size - eliteSize);
+    }
+    int offspringSize = size - eliteSize - mutantSize;
+
+    // inicializar población: vector de genotipos (random keys)
+    vector<vector<double>> poblacion(size);
+    uniform_real_distribution<double> distKey(0.0, 1.0); // Claves [0,1)
+
+    for (int i = 0; i < size; ++i) {
+        vector<double> individuo(g.n);
+        for (int j = 0; j < g.n; ++j) {
+            individuo[j] = distKey(rng);
+        }
+        poblacion[i] = move(individuo);
+    }
+
+    // evaluar y trackear mejor solucion
+    vector<int> mejorSol;
+    int mejorValor = 0;
+    auto start = high_resolution_clock::now();
+
+    // evaluación inicial
+    vector<pair<int,int>> fitness_idx = evaluarPoblacion(poblacion, mejorValor, mejorSol, g);
+
+    // preparadores para crossover y selección
+    uniform_real_distribution<double> pickProb(0.0, 1.0);
+
+    // Generaciones
+    for (int gen = 0; gen < gens; ++gen) {
+        // ordenar población por fitness usando fitness_idx (ya viene ordenado)
+        vector<vector<double>> nuevaPoblacion;
+        nuevaPoblacion.reserve(size);
+
+        // 1) Copiar elites directamente
+        for (int i = 0; i < eliteSize; ++i) {
+            int idx = fitness_idx[i].second;
+            nuevaPoblacion.push_back(poblacion[idx]);
+        }
+
+        // 2) Prepara índices de elites y no-elites
+        vector<int> elites_idx, noelites_idx;
+        elites_idx.reserve(eliteSize);
+        noelites_idx.reserve(size - eliteSize);
+        for (int i = 0; i < (int)fitness_idx.size(); ++i) {
+            int idx = fitness_idx[i].second;
+            if (i < eliteSize) elites_idx.push_back(idx);
+            else noelites_idx.push_back(idx);
+        }
+
+        uniform_int_distribution<> pickElite(0, max(0, (int)elites_idx.size()-1));
+        uniform_int_distribution<> pickNoElite(0, max(0, (int)noelites_idx.size()-1));
+
+        // 3) Generar offspring mediante crossover 
+        for (int k = 0; k < offspringSize; ++k) {
+            int pE = elites_idx[pickElite(rng)];
+            int pN = noelites_idx.empty() ? elites_idx[pickElite(rng)] : noelites_idx[pickNoElite(rng)];
+
+            const vector<double>& padreE = poblacion[pE];
+            const vector<double>& padreN = poblacion[pN];
+
+            vector<double> hijo(g.n);
+            for (int gene = 0; gene < g.n; ++gene) {
+                if (pickProb(rng) < rhoe) hijo[gene] = padreE[gene];
+                else hijo[gene] = padreN[gene];
+            }
+
+            // mutación esporádica guiada por mr
+            if (mr > 0.0 && pickProb(rng) < mr) {
+                int idxGene = rng() % g.n;
+                hijo[idxGene] = distKey(rng);
+            }
+
+            nuevaPoblacion.push_back(move(hijo));
+        }
+
+        // 4) Añadir mutantes (individuos completamente aleatorios)
+        for (int m = 0; m < mutantSize; ++m) {
+            vector<double> mutante;
+            mutante.reserve(g.n);
+            for (int j = 0; j < g.n; ++j) mutante.push_back(distKey(rng));
+            nuevaPoblacion.push_back(move(mutante));
+        }
+
+        // seguridad: ajustar tamaño
+        while ((int)nuevaPoblacion.size() > size) nuevaPoblacion.pop_back();
+        while ((int)nuevaPoblacion.size() < size) {
+            vector<double> extra;
+            extra.reserve(g.n);
+            for (int j = 0; j < g.n; ++j) extra.push_back(distKey(rng));
+            nuevaPoblacion.push_back(move(extra));
+        }
+
+        poblacion = move(nuevaPoblacion);
+
+        // evaluar nueva población y actualizar fitness_idx y mejor solución
+        fitness_idx = evaluarPoblacion(poblacion, mejorValor, mejorSol, g);
+
+        // imprimir info si se pide (cada 10 generaciones por defecto)
+        if (print && (gen % 10 == 0 || gen == gens-1)) {
+            cerr << "[BRKGA] gen " << gen << " best = " << mejorValor << "\n";
+        }
+
+        // chequear tiempo
+        auto elapsed = duration_cast<seconds>(high_resolution_clock::now() - start).count();
+        if (elapsed > tiempoMaxSeg) {
+            if (print) cerr << "[BRKGA] Timeout en gen " << gen << " (elapsed " << elapsed << "s)\n";
+            break;
+        }
+    }
+
+    // asegurar que devolvemos la mejor solución decodificada
+    if (mejorSol.empty()) {
+        if (!fitness_idx.empty()) {
+            int bestIdx = fitness_idx.front().second;
+            mejorSol = decoder(g, poblacion[bestIdx]);
+            mejorValor = static_cast<int>(mejorSol.size());
+        }
+    }
+
+    return pair<double, vector<int>>(static_cast<double>(mejorValor), mejorSol);
+}
+
+
+

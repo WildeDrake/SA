@@ -1,4 +1,3 @@
-// brkga_misp.cpp
 #include "utils.hpp"
 #include <iostream>
 #include <chrono>
@@ -25,7 +24,7 @@ bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo,
 // Retorna lista de nodos seleccionados (vector<int> conteniendo índices de vértices)
 vector<int> decoder(const Grafo& g, const vector<double>& keys) {
     int n = g.n;
-    if ((int)keys.size() != n) {
+    if ((int)keys.size() != n) { // Caso de error: la cantidad de llaves no coinciden con n / Faltan nodos por representar
         cerr << "[decoder] tamaño de keys (" << keys.size() << ") != n (" << n << ")\n";
     }
 
@@ -40,9 +39,9 @@ vector<int> decoder(const Grafo& g, const vector<double>& keys) {
     });
 
     unordered_set<int> sel;
-    vector<int> solucion; // lista de nodos seleccionados
-    solucion.reserve(n);
-
+    vector<int> solucion;        // don't pre-fill with zeros
+    solucion.reserve(n);         // optional: avoid reallocations
+    
     for (auto &p : traduccion) {
         int nodo = p.second;
         if (validoAgregar(g, sel, nodo)) {

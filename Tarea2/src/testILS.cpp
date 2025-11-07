@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     Grafo g = parsearGrafo(filename);
     bool esValida = validador(g, resultado.second);
     if (esValida) {
-        cout << "Solucion valida de tamano " << resultado.second.size() << " encontrada en " << resultado.first << " segundos.\n";
+        cout << resultado.second.size() << " ; " << resultado.first << endl;
     } else {
         cout << "Solucion invalida.\n";
     }

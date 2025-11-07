@@ -135,13 +135,14 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
         // Evaluar mejora
         int valor = nuevaSol.size();
         if (valor > mejorValor) {
+            tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
+            if (tiempoMejora > tiempoMaxSeg) break;
             mejorValor = valor;
             mejorSol = nuevaSol;
             mejorSet = nuevaSet;
             baseSol = nuevaSol;
             baseSet = nuevaSet;
             sinMejorar = 0;
-            tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
             if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
         } else {
             sinMejorar++;

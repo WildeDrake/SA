@@ -7,8 +7,6 @@ using namespace std;
 
 // -+-+- Función principal -+-+-
 int main(int argc, char* argv[]) {
-    string root = "../dataset_grafos_no_dirigidos";
-
      if (argc < 3) {
         cerr << "Uso: " << argv[0] << " -i <instancia-problema>\n";
         return 1;
@@ -25,20 +23,18 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    string filename = root + "/" + instancia;
-    Grafo grafo = parsearGrafo(filename);
-
     auto start = chrono::high_resolution_clock::now();
+    Grafo grafo = parsearGrafo(instancia);
     vector<int> resultado = greedy1(grafo);
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;
-
-    if (!validador(grafo, resultado)) {
-        cerr << "Error: solución inválida\n";
-        return 1;
+    
+    bool esValida = validador(grafo, resultado);
+    if (esValida) {
+        cout << resultado.size() << " ; " << elapsed.count() << endl;
+    } else {
+        cout << "Solucion invalida.\n";
     }
-    cout << resultado.size() << " " << elapsed.count() << "\n";
-
     return 0;
 }
 

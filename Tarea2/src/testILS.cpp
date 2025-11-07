@@ -8,7 +8,6 @@ using namespace std;
 
 
 int main(int argc, char* argv[]) {
-    string root = "../dataset_grafos_no_dirigidos";
     // Mapa de argumentos 
     unordered_map<string, string> args;
     for (int i = 1; i < argc - 1; i++) {
@@ -24,8 +23,7 @@ int main(int argc, char* argv[]) {
         cerr << "Ejemplo: ./testILS -i erdos_n1000_p0c0.1_1.graph -k 80 -p 30 -m 60 -t 10\n";
         return 1;
     }
-    string instancia = args["-i"];
-    string filename = root + "/" + instancia;
+    string filename = args["-i"];
     // Leer parametros opcionales (con valores por defecto) 
     int k = args.count("-k") ? stoi(args["-k"]) : 100;
     int m = args.count("-m") ? stoi(args["-m"]) : 50;

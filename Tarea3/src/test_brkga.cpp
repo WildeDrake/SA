@@ -12,7 +12,6 @@ using namespace std::chrono;
 
 
 int main(int argc, char** argv) {
-    string root = "../dataset_grafos_no_dirigidos";
     // Mapa de argumentos 
     unordered_map<string, string> args;
     for (int i = 1; i < argc - 1; i++) {
@@ -28,8 +27,7 @@ int main(int argc, char** argv) {
         cerr << "Ejemplo: ./test_brkga -i ../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.1_1.graph -s 100 -m 0.05 -t 60 -print 1 -pe 0.2 -pm 0.1 -rhoe 0.7\n";
         return 1;
     }
-    string instancia = args["-i"];
-    string filename = root + "/" + instancia;
+    string filename = args["-i"];
     // Leer parametros opcionales (con valores por defecto) 
     int size = args.count("-s") ? stoi(args["-s"]) : 100;
     double mr = args.count("-m") ? stod(args["-m"]) : 0.05;

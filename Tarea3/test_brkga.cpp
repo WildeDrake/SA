@@ -1,4 +1,5 @@
 #include "BRKGA.hpp"
+#include "utils.hpp"
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -29,5 +30,11 @@ int main(int argc, char** argv) {
         for (size_t i = 0; i < min<size_t>(result.second.size(), 10); ++i) cout << " " << result.second[i];
         cout << "\n";
     }
+    Grafo g = parsearGrafo(filename);
+    if( validador(g, result.second) )
+        cout << "solution_valid: true\n";
+    else
+        cout << "solution_valid: false\n";
+
     return 0;
 }

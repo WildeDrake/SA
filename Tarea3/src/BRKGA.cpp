@@ -58,9 +58,9 @@ vector<pair<int,int>> evaluarPoblacion(
     int& mejorValor,    // mejor fitness global (referencia)
     vector<int>& mejorSol,  // mejor solución global (referencia)
     const Grafo& g, // grafo del problema
-    bool print = false,
-    double& tiempoMejora = *(new double(0.0)),
-    const high_resolution_clock::time_point& start = high_resolution_clock::now(),
+    bool print,
+    double& tiempoMejora,
+    const high_resolution_clock::time_point& start,
     int tiempoMaxSeg
 ) {
     // evaluar cada individuo
@@ -143,7 +143,16 @@ pair<double, vector<int>> BRKGA_MISP(
     int mejorValor = 0;
 
     // evaluación inicial
-    vector<pair<int,int>> fitness_idx = evaluarPoblacion(poblacion, mejorValor, mejorSol, g);
+    vector<pair<int,int>> fitness_idx = evaluarPoblacion(
+        poblacion,
+        mejorValor,
+        mejorSol,
+        g,
+        print,
+        tiempoMejora,
+        start,
+        tiempoMaxSeg
+    );
 
     // preparadores para crossover y selección
     uniform_real_distribution<double> pickProb(0.0, 1.0);

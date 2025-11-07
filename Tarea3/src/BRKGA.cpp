@@ -60,7 +60,8 @@ vector<pair<int,int>> evaluarPoblacion(
     const Grafo& g, // grafo del problema
     bool print = false,
     double& tiempoMejora = *(new double(0.0)),
-    const high_resolution_clock::time_point& start = high_resolution_clock::now()
+    const high_resolution_clock::time_point& start = high_resolution_clock::now(),
+    int tiempoMaxSeg
 ) {
     // evaluar cada individuo
     vector<pair<int,int>> fitness_idx(poblacion.size());
@@ -69,11 +70,13 @@ vector<pair<int,int>> evaluarPoblacion(
         int fit = static_cast<int>(sol.size()); // fitness = tamaño del conjunto independiente
         fitness_idx[i] = make_pair(fit, static_cast<int>(i)); // guardar fitness e índice
         if (fit > mejorValor) {
-            mejorValor = fit;
-            mejorSol = move(sol);
             // imprimir corte Time Behavior :P
             auto now = high_resolution_clock::now();
             tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
+            // Si la mejora ocurre después del tiempo máximo, descartar
+            if (tiempoMejora > tiempoMaxSeg) break;
+            mejorValor = fit;
+            mejorSol = move(sol);
             if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
         }
     }
@@ -212,10 +215,10 @@ pair<double, vector<int>> BRKGA_MISP(
         poblacion = move(nuevaPoblacion);
 
         // evaluar nueva población y actualizar fitness_idx y mejor solución
-        fitness_idx = evaluarPoblacion(poblacion, mejorValor, mejorSol, g, print, tiempoMejora, start);
+        fitness_idx = evaluarPoblacion(poblacion, mejorValor, mejorSol, g, print, tiempoMejora, start, tiempoMaxSeg);
 
         // chequear tiempo
-        auto elapsed = duration_cast<seconds>(high_resolution_clock::now() - start).count();
+        auto elapsed = duration_cast<milliseconds>(high_resolution_clock::now() - start).count() / 1000.0;
         if (elapsed > tiempoMaxSeg) break;
     }
     // fin de las generaciones

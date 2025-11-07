@@ -13,7 +13,7 @@ ofstream out("Instances.txt");
 int main() {
     // Itera sobre los tamaños de los grafos
     for (int n : {1000, 2000, 3000}) {
-        
+
         // Imprime todas las densidades
         // for (double dens = 0.1; dens <= 0.9; dens += 0.1) {
 
@@ -34,5 +34,5 @@ int main() {
     return 0;
 }
 
-// g++ -O2 instancias.cpp -o instancias
+// g++ -O2 printInstances.cpp -o instancias
 // ./instancias

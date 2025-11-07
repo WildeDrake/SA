@@ -172,6 +172,5 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
 
 
     // Fin del algoritmo
-    if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
     return pair<double, vector<int>>(tiempoMejora, mejorSol);
 }

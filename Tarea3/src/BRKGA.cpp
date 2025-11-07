@@ -70,15 +70,15 @@ vector<pair<int,int>> evaluarPoblacion(
         int fit = static_cast<int>(sol.size()); // fitness = tamaño del conjunto independiente
         fitness_idx[i] = make_pair(fit, static_cast<int>(i)); // guardar fitness e índice
         if (fit > mejorValor) {
-        auto now = high_resolution_clock::now();
-        tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
-        // actualizar mejor global, solo si esta dentro del tiempo límite
-        if (tiempoMejora <= tiempoMaxSeg) {
-            mejorValor = fit;
-            mejorSol = sol;
-            if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
+            auto now = high_resolution_clock::now();
+            tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
+            // actualizar mejor global, solo si esta dentro del tiempo límite
+            if (tiempoMejora <= tiempoMaxSeg) {
+                mejorValor = fit;
+                mejorSol = sol;
+                if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
             }
-       }
+        }
     }
     // ordenar por fitness descendente
     sort(fitness_idx.begin(), fitness_idx.end(), [](const pair<int,int>& a, const pair<int,int>& b){
@@ -90,7 +90,6 @@ vector<pair<int,int>> evaluarPoblacion(
 // -+-+- BRKGA para MISP -+-+-
 /* filename: grafo
    size: tamaño de la población
-   gens: generaciones máximas
    mr: (prob. mutación por hijo, opcional)
    tiempoMaxSeg: timeout en segundos
    print: bandera para imprimir info
@@ -101,7 +100,6 @@ vector<pair<int,int>> evaluarPoblacion(
 pair<double, vector<int>> BRKGA_MISP(
     string filename,
     int size,
-    int gens,
     double mr,
     int tiempoMaxSeg,
     bool print,
@@ -158,8 +156,9 @@ pair<double, vector<int>> BRKGA_MISP(
     // preparadores para crossover y selección
     uniform_real_distribution<double> pickProb(0.0, 1.0);
 
+    double elapsed = 0.0;
     // Generaciones
-    for (int gen = 0; gen < gens; ++gen) {
+    while (elapsed < tiempoMaxSeg) {
         // ordenar población por fitness usando fitness_idx (ya viene ordenado)
         vector<vector<double>> nuevaPoblacion;
         nuevaPoblacion.reserve(size);
@@ -238,12 +237,8 @@ pair<double, vector<int>> BRKGA_MISP(
             cout << "---------------\n";
         }*/
         // chequear tiempo
-        auto elapsed = duration_cast<milliseconds>(high_resolution_clock::now() - start).count() / 1000.0;
-        cout << "[loop end] elapsed=" << elapsed << " tiempoMaxSeg=" << tiempoMaxSeg << endl;
-
-        if (elapsed > tiempoMaxSeg){
-            break;
-        }
+        auto now = high_resolution_clock::now();
+        elapsed = duration_cast<milliseconds>(now - start).count() / 1000.0;
     }
     // fin de las generaciones
 

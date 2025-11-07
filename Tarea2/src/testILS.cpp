@@ -7,16 +7,6 @@
 using namespace std;
 
 
-// -+-+- Funcion para testing -+-+-
-#include <windows.h>
-#include <psapi.h>
-
-double getMemoryUsage() {
-    PROCESS_MEMORY_COUNTERS_EX pmc;
-    GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
-    return (double)pmc.WorkingSetSize / 1024.0 / 1024.0; // Convert to MB
-}
-
 int main(int argc, char* argv[]) {
     string root = "../dataset_grafos_no_dirigidos";
     // Mapa de argumentos 
@@ -43,17 +33,14 @@ int main(int argc, char* argv[]) {
     int tiempoMaxSeg = args.count("-t") ? stoi(args["-t"]) : 10;
     int print = args.count("-print") ? stoi(args["-print"]) : 1;
 
-    double memAntes = getMemoryUsage();
     // Ejecutar ILS 
     pair<double, vector<int>> resultado = Ils(filename, k, m, p, tiempoMaxSeg, print);
-    double memDespues = getMemoryUsage();
 
     // Validar solucion 
     Grafo g = parsearGrafo(filename);
     bool esValida = validador(g, resultado.second);
     if (esValida) {
-        cout << resultado.second.size() << " ; " << resultado.first << " ; Memory used: " 
-             << (memDespues - memAntes) << " MB" << endl;
+        cout << resultado.second.size() << " ; " << resultado.first  << endl;
     } else {
         cout << "Solucion invalida.\n";
     }

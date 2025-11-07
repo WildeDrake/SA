@@ -10,7 +10,6 @@ using namespace std;
 pair<double, vector<int>> BRKGA_MISP(
     string filename,
     int size,
-    int gens,
     double mr,
     int tiempoMaxSeg,
     bool print,

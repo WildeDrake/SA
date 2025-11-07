@@ -30,4 +30,4 @@ clean:
 # make
 # o directamente
 # g++ -O2 src/test_brkga.cpp src/BRKGA.cpp src/utils.cpp -o ./test_brkga
-# ./test_brkga -i ../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.1_1.graph -s 100 -g 500 -m 0.05 -t 60 -print 1 -pe 0.2 -pm 0.1 -rhoe 0.7
+# ./test_brkga -i ../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.1_1.graph -s 100 -m 0.05 -t 60 -print 1 -pe 0.2 -pm 0.1 -rhoe 0.7

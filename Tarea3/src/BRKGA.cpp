@@ -70,15 +70,15 @@ vector<pair<int,int>> evaluarPoblacion(
         int fit = static_cast<int>(sol.size()); // fitness = tamaño del conjunto independiente
         fitness_idx[i] = make_pair(fit, static_cast<int>(i)); // guardar fitness e índice
         if (fit > mejorValor) {
-            // imprimir corte Time Behavior :P
-            auto now = high_resolution_clock::now();
-            tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
-            // Si la mejora ocurre después del tiempo máximo, descartar
-            if (tiempoMejora > tiempoMaxSeg) break;
+        auto now = high_resolution_clock::now();
+        tiempoMejora = duration_cast<milliseconds>(now - start).count() / 1000.0;
+        // actualizar mejor global, solo si esta dentro del tiempo límite
+        if (tiempoMejora <= tiempoMaxSeg) {
             mejorValor = fit;
-            mejorSol = move(sol);
+            mejorSol = sol;
             if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
-        }
+            }
+       }
     }
     // ordenar por fitness descendente
     sort(fitness_idx.begin(), fitness_idx.end(), [](const pair<int,int>& a, const pair<int,int>& b){
@@ -112,6 +112,7 @@ pair<double, vector<int>> BRKGA_MISP(
     // iniciar reloj
     auto start = high_resolution_clock::now();
     double tiempoMejora = 0.0;
+    
     // parsear grafo
     Grafo g = parsearGrafo(filename);
     // generador aleatorio
@@ -135,7 +136,7 @@ pair<double, vector<int>> BRKGA_MISP(
         for (int j = 0; j < g.n; ++j) {
             individuo[j] = distKey(rng);
         }
-        poblacion[i] = move(individuo);
+        poblacion[i] = individuo;
     }
 
     // evaluar y trackear mejor solucion
@@ -201,7 +202,7 @@ pair<double, vector<int>> BRKGA_MISP(
                 hijo[idxGene] = distKey(rng);
             }
 
-            nuevaPoblacion.push_back(move(hijo));
+            nuevaPoblacion.push_back(hijo);
         }
 
         // 4) Añadir mutantes (individuos completamente aleatorios)
@@ -209,7 +210,7 @@ pair<double, vector<int>> BRKGA_MISP(
             vector<double> mutante;
             mutante.reserve(g.n);
             for (int j = 0; j < g.n; ++j) mutante.push_back(distKey(rng));
-            nuevaPoblacion.push_back(move(mutante));
+            nuevaPoblacion.push_back(mutante);
         }
 
         // seguridad: ajustar tamaño
@@ -218,17 +219,31 @@ pair<double, vector<int>> BRKGA_MISP(
             vector<double> extra;
             extra.reserve(g.n);
             for (int j = 0; j < g.n; ++j) extra.push_back(distKey(rng));
-            nuevaPoblacion.push_back(move(extra));
+            nuevaPoblacion.push_back(extra);
         }
 
-        poblacion = move(nuevaPoblacion);
+        poblacion = nuevaPoblacion;
 
         // evaluar nueva población y actualizar fitness_idx y mejor solución
         fitness_idx = evaluarPoblacion(poblacion, mejorValor, mejorSol, g, print, tiempoMejora, start, tiempoMaxSeg);
-
+        // ERASE Print population for debugging
+        /*if (print) {
+            cout << "Generation population:\n";
+            for (const auto& indiv : poblacion) {
+                for (double gene : indiv) {
+                    cout << gene << " ";
+                }
+                cout << "\n";
+            }
+            cout << "---------------\n";
+        }*/
         // chequear tiempo
         auto elapsed = duration_cast<milliseconds>(high_resolution_clock::now() - start).count() / 1000.0;
-        if (elapsed > tiempoMaxSeg) break;
+        cout << "[loop end] elapsed=" << elapsed << " tiempoMaxSeg=" << tiempoMaxSeg << endl;
+
+        if (elapsed > tiempoMaxSeg){
+            break;
+        }
     }
     // fin de las generaciones
 

@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     double rhoe = args.count("-rhoe") ? stod(args["-rhoe"]) : 0.7;
 
     // Ejecutar BRKGA
-    pair<double, vector<int>> resultado = BRKGA_MISP(
+    pair<double, vector<int>> resultado = BRKGA(
         filename,
         size,
         mr,

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-pair<double, vector<int>> BRKGA_MISP(
+pair<double, vector<int>> BRKGA(
     string filename,
     int size,
     double mr,

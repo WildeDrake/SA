@@ -77,6 +77,8 @@ vector<pair<int,int>> evaluarPoblacion(
                 mejorValor = fit;
                 mejorSol = sol;
                 if (print) cout << mejorValor << " ; " << tiempoMejora << endl;
+            } else {
+                break;
             }
         }
     }
@@ -97,7 +99,7 @@ vector<pair<int,int>> evaluarPoblacion(
    pm: proporción mutants
    rhoe: probabilidad de tomar gene del padre elite en crossover
 */
-pair<double, vector<int>> BRKGA_MISP(
+pair<double, vector<int>> BRKGA(
     string filename,
     int size,
     double mr,

@@ -24,10 +24,9 @@ int main() {
             //for (int i = 1; i <= 30; i++) {
             //    out << root << "/new_" << n << "_dataset/erdos_n" << n << "_p0c" << fixed << setprecision(1) << dens << "_" << i << ".graph" << endl;
 
-            // Imprime la 3 instancias al azar de las 30por cada densidad
-            for (int i : {3, 15, 27}) {
-                out << root << "/new_" << n << "_dataset/erdos_n" << n << "_p0c" << fixed << setprecision(1) << dens << "_" << i << ".graph" << endl;
-            }
+            // Imprime una instancia al azar de las 30
+            int i = rand() % 30 + 1;
+            out << root << "/new_" << n << "_dataset/erdos_n" << n << "_p0c" << fixed << setprecision(1) << dens << "_" << i << ".graph" << endl;
         }
     }
     out.close();

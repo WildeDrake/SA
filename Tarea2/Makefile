@@ -16,7 +16,7 @@ EXECS = testILS Experimento
 all: $(EXECS)
 
 # Compilar ILS
-testILS: $(SRC_DIR)/testILS.cpp $(SRC_DIR)/ILS.cpp $(SRC_DIR)/greedyrand1.cpp $(SRC_DIR)/utils.cpp
+testILS: $(SRC_DIR)/test_ILS.cpp $(SRC_DIR)/ILS.cpp $(SRC_DIR)/greedyrand1.cpp $(SRC_DIR)/utils.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $(BIN_DIR)/$@
 
 # Compilar Experimento

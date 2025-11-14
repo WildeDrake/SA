@@ -1,45 +1,15 @@
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.1_3.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.1_15.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.1_27.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.3_3.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.3_15.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.3_27.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.5_3.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.5_15.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.5_27.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.7_3.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.7_15.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.7_27.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.9_3.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.9_15.graph
-../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.9_27.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.1_3.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.1_15.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.1_27.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.3_3.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.3_15.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.3_27.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.5_3.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.5_15.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.5_27.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.7_3.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.7_15.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.7_27.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.9_3.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.9_15.graph
-../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.9_27.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.1_3.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.1_15.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.1_27.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.3_3.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.3_15.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.3_27.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.5_3.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.5_15.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.5_27.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.7_3.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.7_15.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.7_27.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.9_3.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.9_15.graph
-../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.9_27.graph
+../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.1_12.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.3_18.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.5_5.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.7_11.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_1000_dataset/erdos_n1000_p0c0.9_30.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.1_5.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.3_19.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.5_19.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.7_23.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_2000_dataset/erdos_n2000_p0c0.9_15.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.1_6.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.3_6.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.5_2.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.7_28.graph -t 10 -irace 1 -print 0
+../dataset_grafos_no_dirigidos/new_3000_dataset/erdos_n3000_p0c0.9_2.graph -t 10 -irace 1 -print 0

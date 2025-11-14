@@ -53,7 +53,9 @@ int main(int argc, char** argv) {
     if (validador(g, resultado.second)) {
         if (irace) {
             int res = -resultado.second.size();
-            cout << res << endl;
+            int t = resultado.first;
+            cout << res << " " << t << endl;
+        
         } else {
             cout << resultado.second.size() << " ; " << fixed << setprecision(3) << resultado.first << endl;
         }

@@ -92,7 +92,7 @@ vector<pair<int,int>> evaluarPoblacion(
 // -+-+- BRKGA para MISP -+-+-
 /* filename: grafo
    size: tamaño de la población
-   mr: (prob. mutación por hijo, opcional)
+   mr: (prob. mutación por hi   jo, opcional)
    tiempoMaxSeg: timeout en segundos
    print: bandera para imprimir info
    pe: proporción elite 

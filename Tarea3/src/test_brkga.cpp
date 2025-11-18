@@ -52,9 +52,9 @@ int main(int argc, char** argv) {
     Grafo g = parsearGrafo(filename);
     if (validador(g, resultado.second)) {
         if (irace) {
-            int res = -resultado.second.size();
+            int res = resultado.second.size();
             int t = resultado.first;
-            cout << res << " " << t << endl;
+            cout << res << endl;
         
         } else {
             cout << resultado.second.size() << " ; " << fixed << setprecision(3) << resultado.first << endl;

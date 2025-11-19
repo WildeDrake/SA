@@ -16,7 +16,7 @@ int main() {
     double pm = 0.5;         // proporción de mutantes
     double mr = 1;         // prob mutación
     double rhoe = 0.67;       // clasismo!!!!!!
-    int tiempoMaxSeg = 10;    // tiempo límite
+    int tiempoMaxSeg = 60;    // tiempo límite
 
     string root = "../dataset_grafos_no_dirigidos";
 
@@ -24,16 +24,16 @@ int main() {
     out << "TamañoGrafo;Densidad;MediaBRKGA;DesviaciónEstandarBRKGA;TiempoMedioBRKGA\n";
 
     for (int n : {1000, 2000, 3000}) {
-        for (double dens = 0.1; dens <= 0.9; dens += 0.1) {
+        for (double dens = 0.1; dens <= 0.9; dens += 0.4) {
 
             double sum_res = 0, sum_tiempo = 0;
             double PROM_res = 0, DES_res = 0, PROM_tiempo = 0;
 
             vector<pair<double, vector<int>>> resultados;
-            resultados.reserve(30);
+            resultados.reserve(9);
 
             // 30 corridas por instancia
-            for (int i = 1; i <= 30; i++) {
+            for (int i = 1; i <= 30; ++i) {
 
                 ostringstream oss;
                 oss << root << "/new_" << n << "_dataset/erdos_n" << n

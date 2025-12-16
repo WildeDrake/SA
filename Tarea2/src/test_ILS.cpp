@@ -52,5 +52,5 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// g++ testILS.cpp utils.cpp ILS.cpp greedyrand1.cpp -o testILS
-// ./testILS -i ..\dataset_grafos_no_dirigidos\new_1000_dataset\erdos_n1000_p0c0.1_1.graph -k 100 -p 30 -m 50 -t 10 -irace 1 -print 0
+// g++ testILS.cpp utils.cpp ILS.cpp greedyrand1.cpp -o test_ILS
+// ./test_ILS -i ..\dataset_grafos_no_dirigidos\new_1000_dataset\erdos_n1000_p0c0.1_1.graph -k 100 -p 30 -m 50 -t 10 -irace 1 -print 0

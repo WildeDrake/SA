@@ -34,15 +34,16 @@ bool validoAgregar(const Grafo& g, const unordered_set<int>& conjunto, int nodo,
 pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiempoMaxSeg, bool print){
     p = p / 100.0; // convertir porcentaje a fraccion
     auto start = high_resolution_clock::now();
-    mt19937 rng(random_device{}());
-
+    unsigned int seed = 9;
+    mt19937 rng(seed);
+    cout << "Seed: " << seed << endl;
 
     // Parsing y contruccion de grafo
     Grafo g = parsearGrafo(filename);
 
 
     // Buscamos solucion incial con greedy random
-    vector<int> mejorSol = greedyRandK(g, k);
+    vector<int> mejorSol = greedyRandK(g, k, seed);
     unordered_set<int> mejorSet(mejorSol.begin(), mejorSol.end());
     int mejorValor = mejorSol.size();
     if (print) cout << mejorValor << " ; " << duration_cast<seconds>(high_resolution_clock::now() - start).count() << endl;
@@ -159,7 +160,7 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
             }
             
             // Reagregar con greedy random limitado
-            vector<int> solRand = greedyRandK(g, k);
+            vector<int> solRand = greedyRandK(g, k, seed);
             for (int nodo : solRand) {
                 if (validoAgregar(g, baseSet, nodo)) {
                     baseSol.push_back(nodo);
@@ -174,3 +175,4 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
     // Fin del algoritmo
     return pair<double, vector<int>>(tiempoMejora, mejorSol);
 }
+

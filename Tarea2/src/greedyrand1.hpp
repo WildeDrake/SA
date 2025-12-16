@@ -3,8 +3,9 @@
 
 #include "utils.hpp"
 #include <vector>
+
 using namespace std;
 
-vector<int> greedyRandK(Grafo& grafo, int k, unsigned int seed);
+vector<int> greedyRandK(Grafo& grafo, int k);
 
 #endif

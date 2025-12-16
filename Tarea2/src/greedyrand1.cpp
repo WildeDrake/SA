@@ -6,7 +6,7 @@ using namespace std;
 
 
 // -+-+- Greedy aleatorizado con parámetro k -+-+-
-vector<int> greedyRandK(Grafo& grafo, int k, unsigned int seed=0) {
+vector<int> greedyRandK(Grafo& grafo, int k) {
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> heap;
     // Inicializar heap con (grado, vértice)
     for (int i = 0; i < grafo.n; i++) {
@@ -15,10 +15,7 @@ vector<int> greedyRandK(Grafo& grafo, int k, unsigned int seed=0) {
     vector<bool> eliminado(grafo.n, false);
     // Generador de números aleatorios
     random_device rd;
-    mt19937 gen;
-    if (seed == 0) gen = mt19937(rd());
-    else gen = mt19937(seed);
-    
+    mt19937 rng(rd());    
     // Proceso greedy aleatorizado
     vector<int> resultado;
     while (!heap.empty()) {
@@ -33,7 +30,7 @@ vector<int> greedyRandK(Grafo& grafo, int k, unsigned int seed=0) {
         if (candidatos.empty()) break;
         // Escoger uno al azar
         uniform_int_distribution<> dis(0, (int)candidatos.size() - 1);
-        auto chosen = candidatos[dis(gen)];
+        auto chosen = candidatos[dis(rng)];
         int v = chosen.second;
 
         eliminado[v] = true;

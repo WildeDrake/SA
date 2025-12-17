@@ -3,7 +3,7 @@
 # ------------------------
 
 CXX = g++
-CXXFLAGS = -O2
+CXXFLAGS = -O2 -std=c++1z
 SRC_DIR = ./src
 BIN_DIR = .
 

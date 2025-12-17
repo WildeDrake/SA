@@ -93,21 +93,15 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
                 
                 // Revisar conflictos directos con la solución actual
                 vector<int> conflictos;
-                for (int s : nuevaSol) {
-                    if (find(g.vecinos[agregar].begin(), g.vecinos[agregar].end(), s) != g.vecinos[agregar].end()) { // si son adyacentes, conflicto
-                        conflictos.push_back(s);
+                for (int vecino : g.vecinos[agregar]) {
+                    if (nuevaSet.count(vecino)) {
+                        conflictos.push_back(vecino);
+                        if (conflictos.size() > 1) break;
                     }
                 }
 
-                if (!conflictos.empty()) { // Si hay conflictos, intentar swap
-
-                    // Elegir nodo a quitar: el que bloquea más candidatos futuros
-                    int mejorQuitar = *max_element(conflictos.begin(), conflictos.end(), [&](int a, int b) {
-                        int bloqueaA = 0, bloqueaB = 0;
-                        for (int v : g.vecinos[a]) if (!nuevaSet.count(v)) bloqueaA++;
-                        for (int v : g.vecinos[b]) if (!nuevaSet.count(v)) bloqueaB++;
-                        return bloqueaA < bloqueaB;
-                    });
+                if (conflictos.size() == 1) { // Si hay exactamente un conflicto, intentar swap
+                    int mejorQuitar = conflictos[0];
 
                     // Ejecutar swap solo si el resultado sigue siendo válido
                     nuevaSet.erase(mejorQuitar);
@@ -122,7 +116,7 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
                         nuevaSet.insert(mejorQuitar);
                     }
 
-                } else {    // Agregar directamente si no hay conflicto
+                } else if (conflictos.empty()) {    // Agregar directamente si no hay conflicto
 
                     if (validoAgregar(g, nuevaSet, agregar)) {
                         nuevaSet.insert(agregar);
@@ -153,11 +147,14 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
         // Reinicio parcial no hay mejora en m iteraciones
         if (sinMejorar > m) {
             int numReemplazo = max(1, (int)(baseSol.size() * p)); // reemplaza p% nodos
-            shuffle(baseSol.begin(), baseSol.end(), rng);
+            
             for (int i = 0; i < numReemplazo && !baseSol.empty(); i++) {
-                int idx = rng() % baseSol.size();
+                uniform_int_distribution<int> dist(0, baseSol.size() - 1);
+                int idx = dist(rng);
+                
                 baseSet.erase(baseSol[idx]);
-                baseSol.erase(baseSol.begin() + idx);
+                baseSol[idx] = baseSol.back();
+                baseSol.pop_back();
             }
             
             // Reagregar con greedy random limitado
@@ -172,8 +169,6 @@ pair<double, vector<int>> Ils(string filename, int k, int m, double p, int tiemp
         }
     }
 
-
     // Fin del algoritmo
     return pair<double, vector<int>>(tiempoMejora, mejorSol);
 }
-

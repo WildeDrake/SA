@@ -11,7 +11,6 @@ using namespace chrono;
 
 int main() {
     int k = 100;           // Parametro ILS
-    int n = 33;            // Parametro ILS
     int m = 50;            // Parametro ILS
     double p = 30.0;       // Parametro ILS
     int tiempoMaxSeg = 10; // Parametro ILS
@@ -34,7 +33,7 @@ int main() {
                     << "_" << i << ".graph";
                 string file = oss.str();
                 // Ils 
-                res_mh.push_back(Ils(file, k, n, m, p, tiempoMaxSeg));
+                res_mh.push_back(Ils(file, k, m, p, tiempoMaxSeg, false));
                 // Acumular resultados
                 sum_mh += res_mh.back().second.size();
                 sum_tiempo_mh += res_mh.back().first;

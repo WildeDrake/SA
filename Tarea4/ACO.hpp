@@ -10,6 +10,16 @@ using namespace std;
 
 // -+-+- Algoritmo ACO para MISP -+-+-
 
-pair<double, vector<int>> ACO(string filename, int nHormigas, double alpha, double beta, double evaporacion, double tauMin, double tauMax, int tiempoMaxSeg, bool print);
+pair<double, vector<int>> ACO(
+    string filename, 
+    int nHormigas = 50, 
+    double alpha = 1.0, 
+    double beta = 2.0, 
+    double evaporacion = 0.1, 
+    double tauMin= 0.01, 
+    double tauMax= 6.0, 
+    int tiempoMaxSeg= 60, bool 
+    print= false);
+
 
 #endif

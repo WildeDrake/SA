@@ -18,8 +18,10 @@ pair<double, vector<int>> ACO(
     double evaporacion = 0.1, 
     double tauMin= 0.01, 
     double tauMax= 6.0, 
-    int tiempoMaxSeg= 60, bool 
-    print= false);
+    int resetThreshold = 100,
+    double lambda = 0.5,
+    int tiempoMaxSeg= 60, 
+    bool print= false);
 
 
 #endif

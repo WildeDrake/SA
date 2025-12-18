@@ -19,6 +19,8 @@ int main() {
     double evaporacion = 0.1;
     double tauMin = 0.01;
     double tauMax = 6.0;
+    int resetThreshold = 100;
+    double lambda = 0.5;
     int tiempoMaxSeg = 10;
     bool print = false;
 
@@ -48,7 +50,7 @@ int main() {
 
                 // Ejecutar ACO
                 resultados.push_back(
-                    ACO(file, nHormigas, alpha, beta, evaporacion, tauMin, tauMax, tiempoMaxSeg, print)
+                    ACO(file, nHormigas, alpha, beta, evaporacion, tauMin, tauMax, resetThreshold, lambda, tiempoMaxSeg, print)
                 );
 
                 sum_res += resultados.back().second.size();

@@ -198,6 +198,8 @@ pair<double, vector<int>> ACO(
     double evaporacion,
     double tauMin,
     double tauMax,
+    int resetThreshold,
+    double lambda,
     int tiempoMaxSeg, 
     bool print
 ) {
@@ -236,6 +238,9 @@ pair<double, vector<int>> ACO(
     for (int i = 0; i < g.n; ++i) {
         heuristicaPrecalc[i] = pow(heuristica[i], beta);
     }
+
+    // Variables para control de estancamiento
+    int iteracionesSinMejora = 0;
 
     // Bucle Principal ACO.
     while (elapsed < tiempoMaxSeg) {
@@ -276,27 +281,45 @@ pair<double, vector<int>> ACO(
                 break;
             }
         }
-
-        // ------------------ Actualizacion de Feromonas ------------------
-        // Evaporacion: Todas las feromonas decaen.
-        for (int i = 0; i < g.n; ++i) {
-            feromonas[i] *= (1.0 - evaporacion);
-            // Clamp inferior
-            if (feromonas[i] < tauMin) {
-                feromonas[i] = tauMin;
+        // ------------------ Reinicio Parcial ------------------
+        if (iteracionesSinMejora >= resetThreshold) {
+            // Actualizar feromonas con mezcla ponderada.
+            for (int i = 0; i < g.n; ++i) {
+                feromonas[i] = (feromonas[i] * (1.0 - lambda)) + (tauMax * lambda);
             }
-        }
-        // Solo la mejor hormiga deposita feromona.
-        // La cantidad a depositar es proporcional a la calidad de la solucion.
-        double deposito = (double)mejorValorGlobal;
-        // Depositar feromona en los nodos de la mejor solucion global.
-        for (int nodo : mejorSolGlobal) {
-            feromonas[nodo] += deposito;
-        }
-        // Clamp superior
-        for (int i = 0; i < g.n; ++i) {
-            if (feromonas[i] > tauMax) {
-                feromonas[i] = tauMax;
+            // Reseteamos el contador pero NO borramos la mejorSolGlobal.
+            iteracionesSinMejora = 0;
+            // Depositar feromona en la mejor solucion global.
+             double deposito = (double)mejorValorGlobal;
+             for (int nodo : mejorSolGlobal) {
+                 feromonas[nodo] += deposito;
+             }
+             // Clamp final por seguridad
+             for(int i=0; i<g.n; ++i) {
+                 if(feromonas[i] > tauMax) feromonas[i] = tauMax;
+             }
+        } else {
+            // ------------------ Actualizacion de Feromonas ------------------
+            // Evaporacion: Todas las feromonas decaen.
+            for (int i = 0; i < g.n; ++i) {
+                feromonas[i] *= (1.0 - evaporacion);
+                // Clamp inferior
+                if (feromonas[i] < tauMin) {
+                    feromonas[i] = tauMin;
+                }
+            }
+            // Solo la mejor hormiga deposita feromona.
+            // La cantidad a depositar es proporcional a la calidad de la solucion.
+            double deposito = (double)mejorValorGlobal;
+            // Depositar feromona en los nodos de la mejor solucion global.
+            for (int nodo : mejorSolGlobal) {
+                feromonas[nodo] += deposito;
+            }
+            // Clamp superior
+            for (int i = 0; i < g.n; ++i) {
+                if (feromonas[i] > tauMax) {
+                    feromonas[i] = tauMax;
+                }
             }
         }
         // Chequear tiempo

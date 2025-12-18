@@ -198,6 +198,8 @@ pair<double, vector<int>> ACO(
         auto now = high_resolution_clock::now();
         elapsed = duration_cast<milliseconds>(now - start).count() / 1000.0;
     }
-
+    if (validador(g, mejorSolGlobal) == false) {
+        cout << "Solución inválida encontrada por ACO.\n" << endl;
+    }
     return make_pair(tiempoMejora, mejorSolGlobal);
 }

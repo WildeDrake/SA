@@ -1,3 +1,4 @@
+#include "utils.hpp" // Asumo que aqui esta definido struct Grafo { int n; vector<vector<int>> vecinos; };
 #include <iostream>
 #include <chrono>
 #include <vector>
@@ -6,22 +7,9 @@
 #include <cmath>
 #include <unordered_set>
 
-#include "utils.hpp" 
-
-
 using namespace std;
 using namespace std::chrono;
 
-
-// -+-+- Parámetros típicos de ACO -+-+-
-struct ParametrosACO {
-    int nHormigas;      // Tamaño de la población por iteración
-    double alpha;       // Importancia de la feromona
-    double beta;        // Importancia de la heurística
-    double evaporacion; // Tasa de evaporación (rho)
-    double tauMin;      // Mínimo de feromona (para evitar estancamiento - Max-Min approach simple)
-    double tauMax;      // Máximo de feromona
-};
 
 
 // -+-+- Construcción de una solución por una hormiga -+-+-
@@ -29,7 +17,8 @@ vector<int> construirSolucion(
     const Grafo& g, 
     const vector<double>& feromonas, 
     const vector<double>& heuristica, 
-    const ParametrosACO& params,
+    double& alpha,
+    double& beta,
     mt19937& rng
 ) {
     int n = g.n;
@@ -56,7 +45,7 @@ vector<int> construirSolucion(
         for (int i = 0; i < n; ++i) {
             if (disponible[i]) {
                 // Formula ACO: (tau^alpha) * (eta^beta)
-                double p = pow(feromonas[i], params.alpha) * pow(heuristica[i], params.beta);
+                double p = pow(feromonas[i], alpha) * pow(heuristica[i], beta);
                 probs.push_back(p);
                 nodosValidos.push_back(i);
                 sumaTotal += p;
@@ -65,7 +54,7 @@ vector<int> construirSolucion(
 
         if (nodosValidos.empty()) break;
 
-        // 2. Selección por Ruleta
+        // Selección por Ruleta
         uniform_real_distribution<double> dist(0.0, sumaTotal);
         double r = dist(rng);
         double acumulado = 0.0;
@@ -99,57 +88,47 @@ vector<int> construirSolucion(
     return solucion;
 }
 
-
 // -+-+- Algoritmo Principal ACO para MISP -+-+-
-/*  filename: archivo del grafo
-    tiempoMaxSeg: timeout
-    nHormigas: cantidad de hormigas por iteración (ej. 50)
-    alpha: importancia de la feromona (ej. 1.0)
-    beta: importancia de la heurística (ej. 2.0)
-    evaporacion: tasa de evaporación (ej. 0.1)
-    tauMin: feromona mínima (ej. 0.01)
-    tauMax: feromona máxima (ej. 6.0)
-    print: si es true, imprime la mejor solución cada vez que mejora
-    Retorna: par (tiempo hasta la mejor solución, mejor solución encontrada)
+/* filename: archivo del grafo
+   tiempoMaxSeg: timeout
+   nHormigas: cantidad de hormigas por iteración (ej. 50)
+   int nHormigas;      // Tamaño de la población por iteración
+   double alpha;       // Importancia de la feromona
+   double beta;        // Importancia de la heurística
+   double evaporacion; // Tasa de evaporación (rho)
+   double tauMin;      // Mínimo de feromona (para evitar estancamiento - Max-Min approach simple)
+   double tauMax;       // Máximo de feromona
 */
 pair<double, vector<int>> ACO(
-    string filename, 
-    int nHormigas = 50,
+    string filename,
+    int nHormigas = 50, 
     double alpha = 1.0,
     double beta = 2.0,
-    double evaporacion = 0.1, 
+    double evaporacion = 0.1,
     double tauMin = 0.01,
     double tauMax = 6.0,
-    int tiempoMaxSeg = 10, 
-    bool print = false
+    int tiempoMaxSeg, 
+    bool print = false 
 ) {
     // Iniciar reloj
     auto start = high_resolution_clock::now();
     double tiempoMejora = 0.0;
 
     // 1. Parsear grafo
-    Grafo g = parsearGrafo(filename); // Asumo que esta función viene de utils.hpp
+    Grafo g = parsearGrafo(filename); 
     mt19937 rng(random_device{}());
 
-    // 2. Configuración de parámetros ACO
-    ParametrosACO params;
-    params.nHormigas = nHormigas;
-    params.alpha = alpha;     // Balance feromona
-    params.beta = beta;      // Balance heurística (MISP suele beneficiarse de una heurística fuerte)
-    params.evaporacion = evaporacion; 
-    params.tauMin = tauMin;
-    params.tauMax = tauMax;
 
     // 3. Inicializar Heurística (Inverso del grado)
     //    Nodos con bajo grado son preferibles para MISP.
     vector<double> heuristica(g.n);
     for (int i = 0; i < g.n; ++i) {
         // +1 para evitar división por cero si hubiera nodos aislados (aunque esos siempre se toman)
-        heuristica[i] = 1.0 / (g.vecinos[i].size() + 1.0); 
+        heuristica[i] = 1.0 / (g.grado[i] + 1.0);
     }
 
     // 4. Inicializar Feromonas
-    vector<double> feromonas(g.n, params.tauMax); // Iniciar con el máximo para exploración
+    vector<double> feromonas(g.n, tauMax); // Iniciar con el máximo para exploración
 
     // Variables para mejor solución global
     vector<int> mejorSolGlobal;
@@ -161,14 +140,13 @@ pair<double, vector<int>> ACO(
     while (elapsed < tiempoMaxSeg) {
         
         // Estructuras para guardar soluciones de esta iteración
-        vector<vector<int>> solucionesIteracion(params.nHormigas);
+        vector<vector<int>> solucionesIteracion(nHormigas);
         vector<int> mejorSolIteracion;
         int mejorValorIteracion = 0;
 
         // A. Fase de Construcción (Hormigas)
-        // Esto se puede paralelizar fácilmente con #pragma omp parallel for
-        for (int k = 0; k < params.nHormigas; ++k) {
-            solucionesIteracion[k] = construirSolucion(g, feromonas, heuristica, params, rng);
+        for (int k = 0; k < nHormigas; ++k) {
+            solucionesIteracion[k] = construirSolucion(g, feromonas, heuristica, alpha, beta, rng);
             
             int fit = (int)solucionesIteracion[k].size();
             
@@ -197,9 +175,9 @@ pair<double, vector<int>> ACO(
         
         // C.1 Evaporación: Todas las feromonas decaen
         for (int i = 0; i < g.n; ++i) {
-            feromonas[i] *= (1.0 - params.evaporacion);
+            feromonas[i] *= (1.0 - evaporacion);
             // Clamp inferior
-            if (feromonas[i] < params.tauMin) feromonas[i] = params.tauMin;
+            if (feromonas[i] < tauMin) feromonas[i] = tauMin;
         }
 
         // C.2 Depósito: Solo la mejor hormiga (Global o Iteración) deposita feromona.
@@ -213,7 +191,7 @@ pair<double, vector<int>> ACO(
 
         // Clamp superior
         for (int i = 0; i < g.n; ++i) {
-            if (feromonas[i] > params.tauMax) feromonas[i] = params.tauMax;
+            if (feromonas[i] > tauMax) feromonas[i] = tauMax;
         }
 
         // Chequear tiempo

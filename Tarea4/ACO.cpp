@@ -101,20 +101,24 @@ vector<int> construirSolucion(const Grafo& g, const vector<double>& feromonas,
 
 
 
-// -+-+- Busqueda Local (1,2)-Swap -+-+-
+// -+-+- Busqueda Local (1,2)-Swap + Plateau -+-+-
 void busquedaLocal(const Grafo& g, vector<int>& solucion) {
-
     bool mejora = true;
-    // Repetimos mientras logremos mejorar la solucion.
-    while (mejora) {
-        mejora = false;
 
+    // Variables para controlar la meseta.
+    int pasosMeseta = 0;
+    const int MAX_MESETA = 50; 
+
+    // Repetimos mientras logremos mejorar la solucion o estemos explorando la meseta.
+    while (mejora || pasosMeseta < MAX_MESETA) {
+        // Guardamos el estado anterior de mejora para saber si entramos a meseta
+        bool huboMejora = false;
+        mejora = false;
         // Mapeo de quién esta en la solucion.
         vector<bool> enSolucion(g.n, false);
         for (int nodo : solucion) {
             enSolucion[nodo] = true;
         }
-
         // Calcular cuantos vecinos en solucion tiene cada nodo.
         // tightness[v] == 5, v solo esta bloqueado por 5 nodos de la solucion.
         vector<int> tightness(g.n, 0);
@@ -126,8 +130,7 @@ void busquedaLocal(const Grafo& g, vector<int>& solucion) {
                     }
                 }
         }
-
-        // Intentar el Swap.
+        // Intentar el Swap (1,2).
         // Iteramos sobre cada nodo u parte de la solucion actual.
         for (size_t i = 0; i < solucion.size(); ++i) {
             int u = solucion[i];
@@ -166,6 +169,8 @@ void busquedaLocal(const Grafo& g, vector<int>& solucion) {
                             solucion.push_back(c2);
                             // Marcamos mejora para reiniciar el bucle y buscar mas.
                             mejora = true; 
+                            huboMejora = true;
+                            pasosMeseta = 0;
                             break; 
                         }
                     }
@@ -174,21 +179,43 @@ void busquedaLocal(const Grafo& g, vector<int>& solucion) {
             }
             if (mejora) break;
         }
+        // Estrategia Plateau (1,1)-Swap.
+        // Solo si no hubo mejora (1,2) y tenemos credito de pasos.
+        if (!huboMejora && pasosMeseta < MAX_MESETA) {
+            bool cambioMeseta = false;
+            for (size_t i = 0; i < solucion.size(); ++i) {
+                int u = solucion[i];
+                // Buscamos 1 vecino para intercambiar.
+                for (int vecino : g.vecinos[u]) {
+                    if (!enSolucion[vecino] && tightness[vecino] == 1) {
+                        // Realizamos (1,1) Swap directo.
+                        solucion[i] = vecino; 
+                        pasosMeseta++;
+                        cambioMeseta = true;
+                        break; 
+                    }
+                }
+                if (cambioMeseta) break;
+            }
+            // Si no hubo mejora ni cambio en meseta, el while terminara solo.
+        }
     }
 }
 
 
 
 // -+-+- Algoritmo Principal ACO para MISP -+-+-
-/* filename: archivo del grafo.
-   tiempoMaxSeg:        Timeout.
-   nHormigas:           Cantidad de hormigas por iteracion.
-   int nHormigas:       Tamaño de la poblacion por iteracion.
-   double alpha:        Importancia de la feromona.
-   double beta:         Importancia de la heuristica.
-   double evaporacion:  Tasa de evaporacion (rho).
-   double tauMin:       Minimo de feromona.
-   double tauMax:       Maximo de feromona.
+/*  filename: archivo del grafo.
+    tiempoMaxSeg:        Timeout.
+    nHormigas:           Cantidad de hormigas por iteracion.
+    int nHormigas:       Tamaño de la poblacion por iteracion.
+    double alpha:        Importancia de la feromona.
+    double beta:         Importancia de la heuristica.
+    double evaporacion:  Tasa de evaporacion (rho).
+    double tauMin:       Minimo de feromona.
+    double tauMax:       Maximo de feromona.
+    int resetThreshold:  Iteraciones sin mejora para reinicio parcial.
+    double lambda:       Factor de mezcla en reinicio parcial.
 */
 pair<double, vector<int>> ACO(
     string filename,
@@ -267,6 +294,7 @@ pair<double, vector<int>> ACO(
         busquedaLocal(g, mejorSolIteracion);
         mejorValorIteracion = (int)mejorSolIteracion.size();
 
+        bool huboMejoraGlobal = false;
         // ------------------ Actualizar Mejor Global ------------------
         // Si la mejor de la iteracion es mejor que la global, actualizar.
         if (mejorValorIteracion > mejorValorGlobal) {
@@ -277,10 +305,20 @@ pair<double, vector<int>> ACO(
                 mejorValorGlobal = mejorValorIteracion;
                 mejorSolGlobal = mejorSolIteracion;
                 if (print) cout << mejorValorGlobal << " ; " << tiempoMejora << endl;
+                // flag de mejora
+                huboMejoraGlobal = true;
             } else {
                 break;
             }
         }
+
+        // Control de estancamiento
+        if (huboMejoraGlobal) {
+            iteracionesSinMejora = 0;
+        } else {
+            iteracionesSinMejora++;
+        }
+
         // ------------------ Reinicio Parcial ------------------
         if (iteracionesSinMejora >= resetThreshold) {
             // Actualizar feromonas con mezcla ponderada.

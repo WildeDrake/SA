@@ -1,4 +1,3 @@
-#include "utils.hpp" // Asumo que aqui esta definido struct Grafo { int n; vector<vector<int>> vecinos; };
 #include <iostream>
 #include <chrono>
 #include <vector>
@@ -7,8 +6,12 @@
 #include <cmath>
 #include <unordered_set>
 
+#include "utils.hpp" 
+
+
 using namespace std;
 using namespace std::chrono;
+
 
 // -+-+- Parámetros típicos de ACO -+-+-
 struct ParametrosACO {
@@ -19,6 +22,7 @@ struct ParametrosACO {
     double tauMin;      // Mínimo de feromona (para evitar estancamiento - Max-Min approach simple)
     double tauMax;      // Máximo de feromona
 };
+
 
 // -+-+- Construcción de una solución por una hormiga -+-+-
 vector<int> construirSolucion(
@@ -95,16 +99,29 @@ vector<int> construirSolucion(
     return solucion;
 }
 
+
 // -+-+- Algoritmo Principal ACO para MISP -+-+-
-/* filename: archivo del grafo
-   tiempoMaxSeg: timeout
-   nHormigas: cantidad de hormigas por iteración (ej. 50)
+/*  filename: archivo del grafo
+    tiempoMaxSeg: timeout
+    nHormigas: cantidad de hormigas por iteración (ej. 50)
+    alpha: importancia de la feromona (ej. 1.0)
+    beta: importancia de la heurística (ej. 2.0)
+    evaporacion: tasa de evaporación (ej. 0.1)
+    tauMin: feromona mínima (ej. 0.01)
+    tauMax: feromona máxima (ej. 6.0)
+    print: si es true, imprime la mejor solución cada vez que mejora
+    Retorna: par (tiempo hasta la mejor solución, mejor solución encontrada)
 */
-pair<double, vector<int>> ACO_MISP(
+pair<double, vector<int>> ACO(
     string filename, 
-    int tiempoMaxSeg, 
-    bool print,
-    int nHormigas = 50 
+    int nHormigas = 50,
+    double alpha = 1.0,
+    double beta = 2.0,
+    double evaporacion = 0.1, 
+    double tauMin = 0.01,
+    double tauMax = 6.0,
+    int tiempoMaxSeg = 10, 
+    bool print = false
 ) {
     // Iniciar reloj
     auto start = high_resolution_clock::now();
@@ -117,11 +134,11 @@ pair<double, vector<int>> ACO_MISP(
     // 2. Configuración de parámetros ACO
     ParametrosACO params;
     params.nHormigas = nHormigas;
-    params.alpha = 1.0;     // Balance feromona
-    params.beta = 2.0;      // Balance heurística (MISP suele beneficiarse de una heurística fuerte)
-    params.evaporacion = 0.1; 
-    params.tauMin = 0.01;
-    params.tauMax = 6.0;
+    params.alpha = alpha;     // Balance feromona
+    params.beta = beta;      // Balance heurística (MISP suele beneficiarse de una heurística fuerte)
+    params.evaporacion = evaporacion; 
+    params.tauMin = tauMin;
+    params.tauMax = tauMax;
 
     // 3. Inicializar Heurística (Inverso del grado)
     //    Nodos con bajo grado son preferibles para MISP.

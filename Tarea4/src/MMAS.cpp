@@ -204,7 +204,7 @@ void busquedaLocal(const Grafo& g, vector<int>& solucion) {
 
 
 
-// -+-+- Algoritmo Principal ACO para MISP -+-+-
+// -+-+- Algoritmo Principal MMAS para MISP -+-+-
 /*  filename: archivo del grafo.
     tiempoMaxSeg:        Timeout.
     nHormigas:           Cantidad de hormigas por iteracion.
@@ -217,7 +217,7 @@ void busquedaLocal(const Grafo& g, vector<int>& solucion) {
     int resetThreshold:  Iteraciones sin mejora para reinicio parcial.
     double lambda:       Factor de mezcla en reinicio parcial.
 */
-pair<double, vector<int>> ACO(
+pair<double, vector<int>> MMAS(
     string filename,
     int nHormigas, 
     double alpha,
@@ -269,7 +269,7 @@ pair<double, vector<int>> ACO(
     // Variables para control de estancamiento
     int iteracionesSinMejora = 0;
 
-    // Bucle Principal ACO.
+    // Bucle Principal MMAS.
     while (elapsed < tiempoMaxSeg) {
         solucionesIteracion.clear();
         solucionesIteracion.resize(nHormigas);
@@ -365,7 +365,7 @@ pair<double, vector<int>> ACO(
         elapsed = duration_cast<milliseconds>(now - start).count() / 1000.0;
     }
     if (validador(g, mejorSolGlobal) == false) {
-        cout << "Solucion invalida encontrada por ACO.\n" << endl;
+        cout << "Solucion invalida encontrada por MMAS.\n" << endl;
     }
     return make_pair(tiempoMejora, mejorSolGlobal);
 }

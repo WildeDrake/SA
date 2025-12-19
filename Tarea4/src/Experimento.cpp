@@ -1,4 +1,4 @@
-#include "ACO.hpp"
+#include "MMAS.hpp"
 #include "utils.hpp"
 
 #include <chrono>
@@ -11,7 +11,7 @@ using namespace std;
 using namespace chrono;
 
 int main() {
-    // Parámetros ACO, le di los mejores de irace
+    // Parámetros MMAS, le di los mejores de irace
     string filename; 
     int nHormigas = 50;
     double alpha = 1.0;
@@ -26,8 +26,8 @@ int main() {
 
     string root = "../dataset_grafos_no_dirigidos";
 
-    ofstream out("resultados_aco.csv");
-    out << "TamañoGrafo;Densidad;MediaACO;DesviaciónEstandarACO;TiempoMedioACO\n";
+    ofstream out("resultados_MMAS.csv");
+    out << "TamañoGrafo;Densidad;MediaMMAS;DesviaciónEstandarMMAS;TiempoMedioMMAS\n";
 
     for (int n : {1000, 2000, 3000}) {
         for (double dens = 0.1; dens <= 0.9; dens += 0.1) {
@@ -48,9 +48,9 @@ int main() {
 
                 string file = oss.str();
 
-                // Ejecutar ACO
+                // Ejecutar MMAS
                 resultados.push_back(
-                    ACO(file, nHormigas, alpha, beta, evaporacion, tauMin, tauMax, resetThreshold, lambda, tiempoMaxSeg, print)
+                    MMAS(file, nHormigas, alpha, beta, evaporacion, tauMin, tauMax, resetThreshold, lambda, tiempoMaxSeg, print)
                 );
 
                 sum_res += resultados.back().second.size();

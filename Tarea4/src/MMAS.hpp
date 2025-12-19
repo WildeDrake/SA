@@ -1,5 +1,5 @@
-#ifndef ACO_HPP
-#define ACO_HPP
+#ifndef MMAS_HPP
+#define MMAS_HPP
 
 #include "utils.hpp" 
 #include <vector>
@@ -8,9 +8,9 @@
 using namespace std;
 
 
-// -+-+- Algoritmo ACO para MISP -+-+-
+// -+-+- Algoritmo MMAS para MISP -+-+-
 
-pair<double, vector<int>> ACO(
+pair<double, vector<int>> MMAS(
     string filename, 
     int nHormigas = 50, 
     double alpha = 1.0, 
